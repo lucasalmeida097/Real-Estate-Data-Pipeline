@@ -9,6 +9,7 @@ conteineirizar a aplicação com o docker
 Validação dos dados no banco?
 Agendamento da pipeline?
 Crie um arquivo chamado Makefile na raiz do projeto:
+Controlar o numero de paginas disponíveis para fazer o scraping
 
 Configure ECS Cluster + Fargate para rodar o container (AWS Free Tier, mais complexo, mas ideal pra portfólio)
 ⚠️ Exige mais configuração, mas é excelente para currículos de Data Engineer.
