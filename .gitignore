@@ -1,5 +1,5 @@
 .env
 .venv
-README.me
-__pycahe__/
-csv/
+README.md
+__pycache__/
+*.csv
