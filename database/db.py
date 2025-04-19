@@ -1,83 +1,50 @@
 import os
 import logging
 import pandas as pd
-import psycopg2
-from psycopg2.extras import execute_values
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 logger = logging.getLogger(__name__)
 load_dotenv()
 
+DATABASE_URL = (
+    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}"
+    f"@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+)
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def connection():
+
+def get_db():
+    db = SessionLocal()
     try:
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT"),
-            dbname=os.getenv("DB_NAME"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-        )
-        return conn
-    except Exception as e:
-        logger.error(f"Error connecting to the database: {e}")
-        raise
+        yield db
+    finally:
+        db.close()
 
 
-def save_db(df: pd.DataFrame, table_name: str = "real_estate"):
-    conn = connection()
-    cursor = conn.cursor()
+def save_db(df, table_name="real_estate"):
+    from database.models import RealEstate
 
-    create_table_query = f"""
-    CREATE TABLE IF NOT EXISTS {table_name} (
-        id SERIAL PRIMARY KEY,
-        title TEXT,
-        price NUMERIC,
-        size INTEGER,
-        bedrooms INTEGER,
-        bathrooms INTEGER,
-        parking_spaces INTEGER,
-        link TEXT UNIQUE
-    );
-    """
-    cursor.execute(create_table_query)
-
-    insert_query = f"""
-    INSERT INTO {table_name} (title, price, size, bedrooms, bathrooms,
-    parking_spaces, link)
-    VALUES %s
-    """
+    logger.info(f"Saving {len(df)} records to '{table_name}'...")
+    db = next(get_db())
 
     df["price"] = pd.to_numeric(df["price"], errors="coerce")
-
     int_columns = ["size", "bedrooms", "bathrooms", "parking_spaces"]
     for col in int_columns:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
-
-    df = df.astype(object)
-    data = (
-        df[
-            [
-                "title",
-                "price",
-                "size",
-                "bedrooms",
-                "bathrooms",
-                "parking_spaces",
-                "link",
-            ]
-        ]
-        .where(pd.notnull(df), None)
-        .values.tolist()
-    )
+    df = df.fillna(pd.NA)
 
     try:
-        execute_values(cursor, insert_query, data)
-        conn.commit()
-        logger.info(f"Successfully inserted {len(df)} records into '{table_name}'")
+        records_to_insert = df.to_dict(orient="records")
+        for record in records_to_insert:
+            existing = db.query(RealEstate).filter_by(link=record.get("link")).first()
+            if not existing:
+                db_record = RealEstate(**record)
+                db.add(db_record)
+        db.commit()
+        logger.info(f"Successfully inserted {len(records_to_insert)} new records.")
     except Exception as e:
-        conn.rollback()
-        logger.error(f"Error inserting data: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+        db.rollback()
+        logger.error(f"Error during database insertion: {e}")
