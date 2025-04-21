@@ -9,7 +9,8 @@ from database.init_db import init_db
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
-if __name__ == "__main__":
+
+def run_scraping():
     NUM_PAGES = 5
     CSV_PATH = "data/csv/real_estate_sao_paulo.csv"
 
@@ -21,3 +22,7 @@ if __name__ == "__main__":
         save_db(df)
     else:
         logging.warning("No properties were collected.")
+
+
+if __name__ == "__main__":
+    run_scraping()
