@@ -1,100 +1,105 @@
-# 📌 Escopo do Projeto: API de Imóveis - São Paulo
+# 🧠 Real Estate Data Intelligence: Pipeline, API & Price Prediction
 
-## 🌟 Objetivo
-Este projeto tem como objetivo construir uma API profissional utilizando **FastAPI** que fornece dados atualizados sobre **apartamentos à venda na cidade de São Paulo**, extraídos do site [chavesnamao.com.br](https://www.chavesnamao.com.br/apartamentos-a-venda/sp-sao-paulo/).
+## 🎯 Objetivo
 
-A API expõe endpoints que permitem consultar, filtrar e explorar os imóveis com base em critérios como preço, metragem, número de quartos, banheiros, vagas, entre outros.
-
----
-
-## 🔍 Descrição Geral do Projeto
-A aplicação realiza o **scraping automatizado** das páginas do site "Chaves na Mão", utilizando:
-- **Playwright** para lidar com a renderização dinâmica do conteúdo.
-- **BeautifulSoup** para fazer o parsing e extração de informações específicas de cada card de imóvel.
-
-As informações coletadas incluem:
-- Título do anúncio
-- Preço
-- Tamanho (m²)
-- Número de dormitórios
-- Número de banheiros
-- Vagas de garagem
-- Link para o anúncio
-
-Esses dados passam por um pipeline profissional estruturado em camadas.
+Transformar dados brutos de imóveis à venda em São Paulo em insights acionáveis e previsões de preços utilizando um pipeline completo que combina **engenharia de dados**, **ciência de dados** e **visualização interativa com Power BI**.
 
 ---
 
-## 🧱 Pipeline de Dados (ETL)
-A arquitetura do projeto segue uma pipeline com as seguintes camadas:
-- **Bronze:** Armazenamento dos dados crus em CSV (diretório `data/csv`).
-- **Silver:** Limpeza, padronização e transformação dos dados (remoção de duplicatas, conversão de tipos, extração de padrões).
-- **Gold:** Dados tratados e armazenados no **PostgreSQL**, prontos para consumo via API e análises com **dbt**.
+## 🔍 Visão Geral
+
+O projeto realiza scraping automatizado de imóveis do site [chavesnamao.com.br](https://www.chavesnamao.com.br/apartamentos-a-venda/sp-sao-paulo/), armazena os dados em um pipeline em camadas e oferece uma API FastAPI para consulta. A nova fase estende esse pipeline com análise exploratória, modelagem preditiva e dashboards em Power BI.
 
 ---
 
-## 🏧 Funcionalidades da API
-- Listar todos os apartamentos disponíveis.
-- Filtros por faixa de preço, metragem, número de dormitórios, banheiros e vagas.
-- Detalhes completos de cada imóvel.
-- Paginação de resultados.
-- Exportação de dados em CSV ou JSON.
-- Endpoint de status de atualização do scraping.
+## 🧱 Arquitetura do Pipeline
+
+### 1. Coleta (Bronze)
+
+* **Playwright** + **BeautifulSoup** para scraping dos dados da web.
+* Salvamento dos dados crus em `.csv`.
+
+### 2. Processamento (Silver)
+
+* Limpeza e padronização com **pandas**.
+* Conversão de tipos, tratamento de valores ausentes e normalização.
+
+### 3. Armazenamento (Gold)
+
+* Armazenamento final dos dados limpos em **PostgreSQL**.
+* Modelagem analítica com **dbt-core** para consumo otimizado.
 
 ---
 
-## 📜 Documentação Interativa
-- **Swagger UI** gerado automaticamente pelo FastAPI.
-- Documentação interativa disponível em `/docs`.
-- Alternativa com **Redoc** em `/redoc`.
+## 🧠 Camada de Ciência de Dados
+
+### 🔎 Análise Exploratória de Dados (EDA)
+
+* Estudo estatístico com `pandas`, `matplotlib`, `seaborn`.
+* Identificação de outliers, correlações e padrões nos dados.
+
+### 📊 Modelagem Preditiva
+
+* Modelos de regressão para **previsão de preços de imóveis**:
+
+  * Regressão Linear
+  * Random Forest Regressor
+  * XGBoost
+* Avaliação com MAE, RMSE, R².
+* Feature engineering para capturar variáveis relevantes (ex: localização, área, vagas, etc).
 
 ---
 
-## 🧪 Testes Automatizados
-- Testes unitários para scraping, limpeza e transformação dos dados.
-- Testes dos endpoints da API.
-- Testes de integração com o banco de dados.
-- Framework: **pytest** com cobertura integrada no CI.
+## 📈 Visualização com Power BI
+
+* Dashboard conectado ao banco de dados PostgreSQL.
+* Indicadores interativos: faixa de preço por bairro, média por número de quartos, tendência temporal etc.
+* Atualização automática dos dados (via agendamento ou botão de refresh).
 
 ---
 
-## 📈 Análises e Visualização (Opcional)
-- Uso de **dbt-core** para modelagem analítica e transformação SQL em camadas.
-- Possibilidade de integração com **Streamlit** para criação de dashboards interativos.
+## 🌐 API com FastAPI
+
+* Endpoints para consulta de imóveis com filtros.
+* Exportação dos dados em JSON e CSV.
+* Endpoint `/status` para checar data e status da última atualização.
+* Documentação interativa em `/docs` (Swagger) e `/redoc`.
 
 ---
 
-## 🚀 Deploy e Infraestrutura
-- **Docker** para containerização da aplicação e ambientes consistentes.
-- **GitHub Actions** para CI/CD com etapas de lint, testes e deploy.
-- Deploy planejado na **AWS** (EC2, RDS ou ECS) com escalabilidade e segurança.
+## ✅ Testes Automatizados
+
+* Testes com `pytest` para scraping, ETL, API e modelos preditivos.
+* Integração contínua com **GitHub Actions**.
 
 ---
 
-## 🔧 Tecnologias Utilizadas
-- **Python 3.11**
-- **FastAPI**
-- **Playwright** + **BeautifulSoup**
-- **Pandas**
-- **PostgreSQL**
-- **SQLAlchemy**
-- **dbt-core**
-- **Docker**
-- **GitHub Actions**
-- **Streamlit** (opcional)
-- **pytest**
+## 🐳 Deploy e Infraestrutura
+
+* **Docker** para facilitar o deploy em qualquer ambiente.
+* Pipeline CI/CD com GitHub Actions.
+* Deploy planejado em **AWS** (EC2, RDS, ou ECS).
 
 ---
 
-## ❓ Por que este projeto é relevante?
-Imóveis são um mercado em constante movimento e nem sempre os dados estão disponíveis de forma estruturada. Este projeto organiza, limpa e disponibiliza os dados de forma acessível, possibilitando:
-- Estudos de mercado imobiliário.
-- Visualizações e dashboards.
-- Sistemas de recomendação.
-- Monitoramento de preços.
+## 🧰 Tecnologias
+
+| Camada         | Tecnologias Principais    |
+| -------------- | ------------------------- |
+| Coleta         | Playwright, BeautifulSoup |
+| ETL            | Python, Pandas            |
+| Banco de Dados | PostgreSQL, SQLAlchemy    |
+| Modelagem      | scikit-learn, XGBoost     |
+| API            | FastAPI, Uvicorn          |
+| Transformação  | dbt-core                  |
+| Visualização   | Power BI                  |
+| Infraestrutura | Docker, GitHub Actions    |
 
 ---
 
-## 📘 Como isso será documentado no README
-Este escopo será incorporado na seção de introdução do `README.md` final, servindo como referência para novos desenvolvedores, recrutadores e interessados em entender a motivação, arquitetura e objetivos do projeto.
+## 🚀 Impacto Esperado
 
+* Tornar acessíveis dados estruturados de imóveis.
+* Permitir análises automatizadas e decisões baseadas em dados.
+* Implementar modelos preditivos úteis para compradores, corretores e investidores.
+* Demonstrar conhecimento prático em ciência de dados aplicada ao mercado imobiliário.
